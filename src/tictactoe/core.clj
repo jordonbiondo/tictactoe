@@ -8,7 +8,7 @@
 
 (defn make-board
   ([] (make-board 3))
-  ([size] (vec (replicate size (vec (replicate size nil))))))
+  ([size] (vec (replicate size (vec (replicate size 0))))))
 
 (defn place
   ([player x y board] (assoc board x (assoc (nth board x) y player) )))
@@ -37,37 +37,29 @@
   (try (Integer/parseInt (read-line)) (catch Exception e nil)))
 
 (defn validInput
-  ([x y board] (and (>= (min x y)  0) (< (max x y) (count board)) (not (nth (nth board x) y)))))
+  ([x y board] (and (>= (min x y)  0) (< (max x y) (count board)) (== (nth (nth board x) y) 0))))
 
 (defn win
-  ([player] nil))
+  ([player] (println "Player:" player "wins!")))
 
 
 (defn can-place
   ([x y board] (if (and (>= (min x y) 0) (< (max x y) (count board)))
                  (if (nth (nth board x) y) false true) false)))
 
-(defn game-step [p1 p2 board]
-  (let [afterp1 (inquire-and-place p1 board)]
-    (if (player-win p1 afterp1) (win p1)
-        (let [afterp2 (inquire-and-place p2 afterp1)]
-          (if (player-win p2 afterp2) (win p2)
-              (game-step p1 p2 afterp2))))))
-
+(defn dump-board
+  ([board] (map println (board-rows board))))
 
 (defn inquire-and-place
   ([p board] (let [x (getInt) y (getInt)]
                (if (and x y (validInput x y board))
                  (place p x y board)
-                 (do (print "Invalid Input")
+                 (do (println "Invalid Input")
                      (inquire-and-place p board))))))
 
-
-
-
-
-
-
-
-
-
+(defn game-step [p1 p2 board]
+  (let [afterp1 (inquire-and-place p1 board)]
+    (if (player-win p1 (dump-board afterp1)) (win p1)
+        (let [afterp2 (inquire-and-place p2 afterp1)]
+          (if (player-win p2 (dump-board afterp2)) (win p2)
+              (game-step p1 p2 afterp2))))))
