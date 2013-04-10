@@ -6,53 +6,42 @@
   (alter-var-root #'*read-eval* (constantly false))
   (println "Hello, World!"))
 
-(defn make-board
-  ([] (make-board 3))
-  ([size] (vec (replicate size (vec (replicate size 0))))))
+(defn make-board ([] (vec (replicate 3 (vec (replicate 3 0))))))
 
-(defn place
-  ([player x y board] (assoc board x (assoc (nth board x) y player) )))
+(defn place ([player x y board] (assoc board x (assoc (nth board x) y player))))
 
-(defn count-tokens
-  ([player list] (count (filter (fn[x] (== x player)) list))))
+(defn count-tokens ([player list] (count (filter (fn[x] (== x player)) list))))
 
-(defn board-cols
-  ([board] board))
+(defn board-cols ([board] board))
 
-(defn board-rows
-  ([board] (map (fn[y] (map (fn[x] (nth x y)) board)) (range (count board)))))
+(defn board-rows ([board] (map (fn[y] (map (fn[x] (nth x y)) board)) (range (count board)))))
 
 (defn board-diags
   ([board] (list (map (fn[a] (nth (nth board a) a)) (range (count board)))
                  (map (fn[a] (nth (nth board (- (count board) a 1)) a)) (range (count board))))))
 
-(defn board-lists
-  ([board] (concat (board-cols board) (board-rows board) (board-diags board))))
+(defn board-lists ([board] (concat (board-cols board) (board-rows board) (board-diags board))))
 
 (defn player-win
   ([player board] (== (count board)
                       (reduce max (map (fn[line] (count-tokens player line)) (board-lists board))))))
 
-(defn getInt[]
-  (try (Integer/parseInt (read-line)) (catch Exception e nil)))
+(defn get-int [] (try (Integer/parseInt (read-line)) (catch Exception e nil)))
 
-(defn validInput
+(defn valid-input
   ([x y board] (and (>= (min x y)  0) (< (max x y) (count board)) (== (nth (nth board x) y) 0))))
 
-(defn win
-  ([player] (println "Player:" player "wins!")))
-
+(defn win ([player] (println "Player:" player "wins!")))
 
 (defn can-place
   ([x y board] (if (and (>= (min x y) 0) (< (max x y) (count board)))
                  (if (nth (nth board x) y) false true) false)))
 
-(defn dump-board
-  ([board] (map println (board-rows board))))
+(defn dump-board ([board] (map println (board-rows board))))
 
 (defn inquire-and-place
-  ([p board] (let [x (getInt) y (getInt)]
-               (if (and x y (validInput x y board))
+  ([p board] (let [x (get-int) y (get-int)]
+               (if (and x y (valid-input x y board))
                  (place p x y board)
                  (do (println "Invalid Input")
                      (inquire-and-place p board))))))
