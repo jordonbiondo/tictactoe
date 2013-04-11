@@ -1,10 +1,6 @@
 (ns tictactoe.core
   (:gen-class))
 
-(defn -main
-  [& args]
-  (alter-var-root #'*read-eval* (constantly false))
-  (println "Hello, World!"))
 
 (defn make-board ([] (vec (replicate 3 (vec (replicate 3 0))))))
 
@@ -37,7 +33,7 @@
   ([x y board] (if (and (>= (min x y) 0) (< (max x y) (count board)))
                  (if (nth (nth board x) y) false true) false)))
 
-(defn dump-board ([board] (map println (board-rows board))))
+(defn dump-board ([board] (map println (board-rows board)) board))
 
 (defn inquire-and-place
   ([p board] (let [x (get-int) y (get-int)]
@@ -49,6 +45,10 @@
 (defn game-step [p1 p2 board]
   (let [afterp1 (inquire-and-place p1 board)]
     (if (player-win p1 (dump-board afterp1)) (win p1)
-        (let [afterp2 (inquire-and-place p2 afterp1)]
-          (if (player-win p2 (dump-board afterp2)) (win p2)
-              (game-step p1 p2 afterp2))))))
+          (let [afterp2 (inquire-and-place p2 afterp1)]
+            (if (player-win p2 (dump-board afterp2)) (win p2)
+                (game-step p1 p2 afterp2))))))
+(defn -main
+  [& args]
+  (alter-var-root #'*read-eval* (constantly false))
+  (game-step 1 2 (make-board)))
