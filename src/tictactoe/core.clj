@@ -33,10 +33,13 @@
   ([x y board] (if (and (>= (min x y) 0) (< (max x y) (count board)))
                  (if (nth (nth board x) y) false true) false)))
 
-(defn dump-board ([board] (map println (board-rows board)) board))
+(defn dump-board ([board] (doseq [r (board-rows board)] (println r)) board))
+(defn forceprint([thing]) (doseq [t (vec thing)] (print t)) thing)
 
 (defn inquire-and-place
-  ([p board] (let [x (get-int) y (get-int)]
+  ([p board]
+     (forceprint "hello")
+     (let [x (get-int) y (get-int)]
                (if (and x y (valid-input x y board))
                  (place p x y board)
                  (do (println "Invalid Input")
