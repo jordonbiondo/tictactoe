@@ -1,14 +1,11 @@
 (ns tictactoe.core
   (:gen-class))
 
-
 (defn make-board ([] (vec (replicate 3 (vec (replicate 3 0))))))
 
 (defn place ([player x y board] (assoc board x (assoc (nth board x) y player))))
 
 (defn count-tokens ([player list] (count (filter (fn[x] (== x player)) list))))
-
-(defn board-cols ([board] board))
 
 (defn board-rows ([board] (map (fn[y] (map (fn[x] (nth x y)) board)) (range (count board)))))
 
@@ -16,7 +13,7 @@
   ([board] (list (map (fn[a] (nth (nth board a) a)) (range (count board)))
                  (map (fn[a] (nth (nth board (- (count board) a 1)) a)) (range (count board))))))
 
-(defn board-lists ([board] (concat (board-cols board) (board-rows board) (board-diags board))))
+(defn board-lists ([board] (concat board (board-rows board) (board-diags board))))
 
 (defn player-win
   ([player board] (== (count board)
@@ -27,31 +24,34 @@
 (defn valid-input
   ([x y board] (and (>= (min x y)  0) (< (max x y) (count board)) (== (nth (nth board x) y) 0))))
 
-(defn win ([player] (println "Player:" player "wins!")))
+(defn win ([p] (println "Player:" (nth '("O" "X") p) "wins!")))
+
+(defn cat-game [] (println "Cat's game"))
 
 (defn can-place
   ([x y board] (if (and (>= (min x y) 0) (< (max x y) (count board)))
                  (if (nth (nth board x) y) false true) false)))
 
-(defn dump-board ([board] (doseq [r (board-rows board)] (println r)) board))
-(defn forceprint([thing]) (doseq [t (vec thing)] (print t)) thing)
+(defn dump-board ([board] (let [visboard board]
+                            (doseq [r (board-rows visboard)]
+                              (println (map (fn[x] (nth '(" " "X" "0") x)) r)))) board))
+
+(defn is-cat-game ([board] (not= (reduce min (reduce concat  board)) 0)))
 
 (defn inquire-and-place
-  ([p board]
-     (forceprint "hello")
-     (let [x (get-int) y (get-int)]
+  ([p board] (let [x (get-int) y (get-int)]
                (if (and x y (valid-input x y board))
                  (place p x y board)
-                 (do (println "Invalid Input")
-                     (inquire-and-place p board))))))
+                 (do (println "Invalid Input") (inquire-and-place p board))))))
 
 (defn game-step [p1 p2 board]
   (let [afterp1 (inquire-and-place p1 board)]
     (if (player-win p1 (dump-board afterp1)) (win p1)
-          (let [afterp2 (inquire-and-place p2 afterp1)]
-            (if (player-win p2 (dump-board afterp2)) (win p2)
-                (game-step p1 p2 afterp2))))))
+        (if (is-cat-game afterp1) (cat-game)
+            (game-step p2 p1 afterp1)))))
+
 (defn -main
   [& args]
   (alter-var-root #'*read-eval* (constantly false))
+  (println "Welcome to tic tac toe!\nEnter (x y) coords of placement")
   (game-step 1 2 (make-board)))
