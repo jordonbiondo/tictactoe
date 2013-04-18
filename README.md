@@ -1,35 +1,30 @@
 # tictactoe
 
-FIXME: description
+It's a game
 
 ## Installation
 
-Download from http://example.com/FIXME.
+You download it
 
 ## Usage
 
-FIXME: explanation
+run it
 
     $ java -jar tictactoe-0.1.0-standalone.jar [args]
 
 ## Options
 
-FIXME: listing of options this app accepts.
+nope
 
 ## Examples
 
-...
+it's tic tac toe...
 
 ### Bugs
 
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
+NONE EVER
 
 ## License
 
-Copyright © 2013 FIXME
+Copyright © 2013 Nobody
 
-Distributed under the Eclipse Public License, the same as Clojure.
