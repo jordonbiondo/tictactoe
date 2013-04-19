@@ -25,7 +25,6 @@
         (vector x y))
       (vector nil nil))))
 
-
 (defn valid-input
   ([x y board] (and (>= (min x y)  0) (< (max x y) (count board)) (== (nth (nth board x) y) 0))))
 
@@ -39,9 +38,6 @@
                             (doseq [y (range 3)]
                               (println (map (fn[x] (nth (vector (nth chars (- (+(* (inc y) 3) x) 3)) "Ｘ" "◌")
                                                         (nth (nth (board-rows board) y) x))) (range 3))))) board))
-
-
-
 
 (defn is-cat-game ([board] (not= (reduce min (reduce concat  board)) 0)))
 
