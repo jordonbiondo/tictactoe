@@ -1,3 +1,7 @@
+;; jordon biondo
+;; ben summers
+;; clojure connect 4
+
 (ns tictactoe.core (:gen-class))
 
 (defn make-board ([] (vec (replicate 3 (vec (replicate 3 0))))))
@@ -36,8 +40,8 @@
 
 (defn dump-board ([board] (let [visboard board chars (vector "１" "２" "３" "４" "５" "６" "７" "８" "９")]
                             (doseq [y (range 3)]
-                              (println (map (fn[x] (nth (vector (nth chars (- (+(* (inc y) 3) x) 3)) "Ｘ" "◌")
-                                                        (nth (nth (board-rows board) y) x))) (range 3))))) board))
+                              (apply println (concat "|" (map (fn[x] (nth (vector (nth chars (- (+(* (inc y) 3) x) 3)) "Ｘ" "◌")
+                                                        (nth (nth (board-rows board) y) x))) (range 3)) "|")))) board))
 
 (defn is-cat-game ([board] (not= (reduce min (reduce concat  board)) 0)))
 
@@ -51,7 +55,7 @@
 (defn game-step [p1 p2 board]
   (let [afterp1 (inquire-and-place p1 board)]
     (if (player-win p1 (dump-board afterp1)) (win p1)
-        (if (is-cat-game afterp1) (println "--- Cat's game--- ") (game-step p2 p1 afterp1)))))
+        (if (is-cat-game afterp1) (println "--- Cat's game --- ") (game-step p2 p1 afterp1)))))
 
 (defn -main [& args]
   (println "Welcome to tic tac toe!\nEnter the number you where you want to place a token.")
