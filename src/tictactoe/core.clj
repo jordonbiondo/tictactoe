@@ -19,28 +19,38 @@
                       (reduce max (map (fn[l] (count-tokens player l)) (board-lists board))))))
 
 (defn get-int [name] (print name ": ") (flush)
-  (try (Integer/parseInt (read-line)) (catch Exception e nil)))
+  (let [num (try (Integer/parseInt (read-line)) (catch Exception e nil))]
+    (if (and num (> num 0) (< num 10))
+      (let [x (mod (dec num) 3) y (int (/ (dec num) 3))]
+        (vector x y))
+      (vector nil nil))))
+
 
 (defn valid-input
   ([x y board] (and (>= (min x y)  0) (< (max x y) (count board)) (== (nth (nth board x) y) 0))))
 
-(defn win ([p] (println "--- Player" (nth '("X" "O") (dec p)) "wins! ---")))
+(defn win ([p] (println "--- Player" (nth '("Ｘ" "◌") (dec p)) "wins! ---")))
 
 (defn can-place
   ([x y board] (if (and (>= (min x y) 0) (< (max x y) (count board)))
                  (if (nth (nth board x) y) false true) false)))
 
-(defn dump-board ([board] (let [visboard board]
-                            (doseq [r (board-rows visboard)]
-                              (println (map (fn[x] (nth '(" " "X" "0") x)) r)))) board))
+(defn dump-board ([board] (let [visboard board chars (vector "１" "２" "３" "４" "５" "６" "７" "８" "９")]
+                            (doseq [y (range 3)]
+                              (println (map (fn[x] (nth (vector (nth chars (- (+(* (inc y) 3) x) 3)) "Ｘ" "◌")
+                                                        (nth (nth (board-rows board) y) x))) (range 3))))) board))
+
+
+
 
 (defn is-cat-game ([board] (not= (reduce min (reduce concat  board)) 0)))
 
 (defn inquire-and-place
   ([p board] (println "It is " (nth '("X" "O") (dec p)) "'s turn") (flush)
-     (let [x (get-int "X") y (get-int "Y")]
-               (if (and x y (valid-input x y board)) (place p x y board)
-                   (do (println "--- Invalid Input ---") (inquire-and-place p board))))))
+     (let [values (get-int "your move?")]
+       (let [x (first values) y (second values)]
+         (if (and x y (valid-input x y board)) (place p x y board)
+             (do (println "--- Invalid Input ---") (inquire-and-place p board)))))))
 
 (defn game-step [p1 p2 board]
   (let [afterp1 (inquire-and-place p1 board)]
@@ -48,5 +58,7 @@
         (if (is-cat-game afterp1) (println "--- Cat's game--- ") (game-step p2 p1 afterp1)))))
 
 (defn -main [& args]
-  (println "Welcome to tic tac toe!\nEnter x y coords lines for token placement")
-  (game-step 1 2 (make-board)))
+  (println "Welcome to tic tac toe!\nEnter the number you where you want to place a token.")
+  (let [board (make-board)]
+    (dump-board board)
+    (game-step 1 2 (make-board))))
