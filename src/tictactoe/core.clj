@@ -78,7 +78,7 @@ there is an empty space"
 
 (defn inquire-and-place
   "Get user input, and place a token for p"
-  ([p board] (println "It is " (nth '("X" "O") (dec p)) "'s turn") (flush)
+  ([p board] (println "It is " (nth '("Ｘ" "◌") (dec p)) "'s turn") (flush)
      (let [values (get-int "your move?")]
        (let [x (first values) y (second values)]
          (if (and x y (valid-input x y board)) (place p x y board)
